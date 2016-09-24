@@ -6,5 +6,5 @@ import Foundation
 
 
 internal protocol AnimationDataSource {
-    func buildAnimationForImage(image: UIImage, forViewPortSize viewPortSize: CGSize) -> ImageAnimation
+    func buildAnimation(forImage: UIImage, forViewPortSize viewPortSize: CGSize) -> ImageAnimation
 }

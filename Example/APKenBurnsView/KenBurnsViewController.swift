@@ -17,24 +17,24 @@ class KenBurnsViewController: UIViewController {
 
     // MARK: - Public Variables
 
-    var faceRecoginitionMode: APKenBurnsViewFaceRecognitionMode = .None
+    var faceRecoginitionMode: APKenBurnsViewFaceRecognitionMode = .none
     var dataSource: [String]!
 
     // MARK: - Private Variables
 
-    private var index: Int = 0
+    fileprivate var index = 0
 
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationController!.navigationBarHidden = true
+        navigationController!.isNavigationBarHidden = true
 
         kenBurnsView.faceRecognitionMode = faceRecoginitionMode
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         self.kenBurnsView.startAnimations()
@@ -42,9 +42,9 @@ class KenBurnsViewController: UIViewController {
 }
 
 extension KenBurnsViewController: APKenBurnsViewDataSource {
-    func nextImageForKenBurnsView(kenBurnsView: APKenBurnsView) -> UIImage? {
-        let image = UIImage(named: dataSource[index])!
-        index = index == dataSource.count - 1 ? 0 : index + 1
+    func nextImage(forKenBurnsView: APKenBurnsView) -> UIImage? {
+        let image = UIImage(named: dataSource[dataSource.index(dataSource.startIndex, offsetBy: 0)])!
+        self.index = index == dataSource.count - 1 ? 0 : index + 1
         return image
     }
 }

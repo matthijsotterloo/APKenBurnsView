@@ -12,7 +12,7 @@ import QuartzCore
         Main data source method. Data source should provide next image.
         If no image provided (data source returns nil) then previous image will be used one more time.
     */
-    func nextImageForKenBurnsView(kenBurnsView: APKenBurnsView) -> UIImage?
+    func nextImage(forKenBurnsView: APKenBurnsView) -> UIImage?
 }
 
 
@@ -21,19 +21,19 @@ import QuartzCore
     /*
         Called when transition starts from one image to another
     */
-    optional func kenBurnsViewDidStartTransition(kenBurnsView: APKenBurnsView, toImage: UIImage)
+    @objc optional func kenBurnsViewDidStartTransition(kenBurnsView: APKenBurnsView, toImage: UIImage)
 
     /*
         Called when transition from one image to another is finished
     */
-    optional func kenBurnsViewDidFinishTransition(kenBurnsView: APKenBurnsView)
+    @objc optional func kenBurnsViewDidFinishTransition(kenBurnsView: APKenBurnsView)
 }
 
 
 public enum APKenBurnsViewFaceRecognitionMode {
-    case None         // no face recognition, simple Ken Burns effect
-    case Biggest      // recognizes biggest face in image, if any then transition will start or will finish (chosen randomly) in center of face rect.
-    case Group        // recognizes all faces in image, if any then transition will start or will finish (chosen randomly) in center of compound rect of all faces.
+    case none         // no face recognition, simple Ken Burns effect
+    case biggest      // recognizes biggest face in image, if any then transition will start or will finish (chosen randomly) in center of face rect.
+    case group        // recognizes all faces in image, if any then transition will start or will finish (chosen randomly) in center of compound rect of all faces.
 }
 
 
@@ -62,7 +62,7 @@ public class APKenBurnsView: UIView {
     /*
         Face recognition mode. See APKenBurnsViewFaceRecognitionMode docs for more information.
     */
-    public var faceRecognitionMode: APKenBurnsViewFaceRecognitionMode = .None
+    public var faceRecognitionMode: APKenBurnsViewFaceRecognitionMode = .none
 
     /*
         Allowed deviation of scale factor.
@@ -126,8 +126,8 @@ public class APKenBurnsView: UIView {
 
         stopWatch = StopWatch()
 
-        let image = dataSource?.nextImageForKenBurnsView(self)
-        startTransitionWithImage(image!, imageView: firstImageView, nextImageView: secondImageView)
+        let image = dataSource?.nextImage(forKenBurnsView: self)
+        startTransitionWithImage(image: image!, imageView: firstImageView, nextImageView: secondImageView)
     }
 
     public func pauseAnimations() {
@@ -160,7 +160,7 @@ public class APKenBurnsView: UIView {
     private var animationDataSource: AnimationDataSource!
     private var facesDrawer: FacesDrawerProtocol!
 
-    private let notificationCenter = NSNotificationCenter.defaultCenter()
+    private let notificationCenter = NotificationCenter.default
 
     private var timer: BlockTimer?
     private var stopWatch: StopWatch!
@@ -181,11 +181,11 @@ public class APKenBurnsView: UIView {
         guard superview == nil else {
             notificationCenter.addObserver(self,
                                            selector: #selector(applicationWillResignActive),
-                                           name: UIApplicationWillResignActiveNotification,
+                                           name: .UIApplicationWillResignActive,
                                            object: nil)
             notificationCenter.addObserver(self,
                                            selector: #selector(applicationDidBecomeActive),
-                                           name: UIApplicationDidBecomeActiveNotification,
+                                           name: .UIApplicationDidBecomeActive,
                                            object: nil)
             return
         }
@@ -213,7 +213,7 @@ public class APKenBurnsView: UIView {
 
     // MARK: - Timer
 
-    private func startTimerWithDelay(delay: Double, callback: () -> ()) {
+    private func startTimerWithDelay(delay: Double, callback: @escaping () -> ()) {
         stopTimer()
 
         timer = BlockTimer(interval: delay, callback: callback)
@@ -240,12 +240,12 @@ public class APKenBurnsView: UIView {
             fatalError("Animation durations setup is invalid!")
         }
 
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+        DispatchQueue.global().async {
             self.stopWatch.start()
 
-            var animation = self.animationDataSource.buildAnimationForImage(image, forViewPortSize: self.bounds.size)
+            var animation = self.animationDataSource.buildAnimation(forImage: image, forViewPortSize: self.bounds.size)
 
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
 
                 let animationTimeCompensation = self.stopWatch.duration
                 animation = ImageAnimation(startState: animation.startState,
@@ -253,50 +253,46 @@ public class APKenBurnsView: UIView {
                                            duration: animation.duration - animationTimeCompensation)
 
                 imageView.image = image
-                imageView.animateWithImageAnimation(animation)
+                imageView.animateWithImageAnimation(animation: animation)
 
                 if self.showFaceRectangles {
-                    self.facesDrawer.drawFacesInView(imageView, image: image)
+                    self.facesDrawer.drawFacesInView(view: imageView, image: image)
                 }
 
                 let duration = self.buildAnimationDuration()
                 let delay = animation.duration - duration / 2
 
-                self.startTimerWithDelay(delay) {
+                self.startTimerWithDelay(delay: delay) {
 
-                    self.delegate?.kenBurnsViewDidStartTransition?(self, toImage: image)
+                    self.delegate?.kenBurnsViewDidStartTransition?(kenBurnsView: self, toImage: image)
 
-                    self.animateTransitionWithDuration(duration, imageView: imageView, nextImageView: nextImageView) {
-                        self.delegate?.kenBurnsViewDidFinishTransition?(self)
-                        self.facesDrawer.cleanUpForView(imageView)
+                    self.animateTransitionWithDuration(duration: duration, imageView: imageView, nextImageView: nextImageView) {
+                        self.delegate?.kenBurnsViewDidFinishTransition?(kenBurnsView: self)
+                        self.facesDrawer.cleanUpForView(view: imageView)
                     }
 
-                    var nextImage = self.dataSource?.nextImageForKenBurnsView(self)
+                    var nextImage = self.dataSource?.nextImage(forKenBurnsView: self)
                     if nextImage == nil {
                         nextImage = image
                     }
 
-                    self.startTransitionWithImage(nextImage!, imageView: nextImageView, nextImageView: imageView)
+                    self.startTransitionWithImage(image: nextImage!, imageView: nextImageView, nextImageView: imageView)
                 }
             }
         }
     }
 
-    private func animateTransitionWithDuration(duration: Double, imageView: UIImageView, nextImageView: UIImageView, completion: () -> ()) {
-        UIView.animateWithDuration(duration,
-                                   delay: 0.0,
-                                   options: UIViewAnimationOptions.CurveEaseInOut,
-                                   animations: {
-                                       imageView.alpha = 0.0
-                                       nextImageView.alpha = 1.0
-                                   },
-                                   completion: {
-                                       finished in
-
-                                       completion()
-                                   })
+    private func animateTransitionWithDuration(duration: Double, imageView: UIImageView, nextImageView: UIImageView, completion: @escaping () -> ()) {
+        UIView.animate(withDuration: duration,
+                       delay: 0.0,
+                       options: .curveEaseInOut,
+                       animations: {
+                        imageView.alpha = 0.0
+                        nextImageView.alpha = 1.0 },
+                       completion: { finished in
+                        completion() })
     }
-
+    
     private func buildAnimationDuration() -> Double {
         var durationDeviation = 0.0
         if transitionAnimationDurationDeviation > 0.0 {
@@ -314,9 +310,9 @@ public class APKenBurnsView: UIView {
 
     private func buildDefaultImageView() -> UIImageView {
         let imageView = UIImageView(frame: bounds)
-        imageView.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
-        imageView.contentMode = UIViewContentMode.Center
-        self.addSubview(imageView)
+        imageView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+        imageView.contentMode = .center
+        addSubview(imageView)
 
         return imageView
     }

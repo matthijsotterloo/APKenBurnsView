@@ -47,7 +47,7 @@ class ImageAnimationCalculator: ImageAnimationCalculatorProtocol {
             imagePositionY = randomGenerator.randomBool() ? -imageYDeviation : imageYDeviation
         }
 
-        let imagePosition = CGPointMake(imagePositionX, imagePositionY)
+        let imagePosition = CGPoint(x: imagePositionX, y: imagePositionY)
         return imagePosition
     }
 
@@ -69,13 +69,13 @@ class ImageAnimationCalculator: ImageAnimationCalculatorProtocol {
             imagePositionY = randomGenerator.randomCGFloat(min: -imageYDeviation, max: 0.0)
         }
 
-        let imageEndPosition = CGPointMake(imagePositionX, imagePositionY)
+        let imageEndPosition = CGPoint(x: imagePositionX, y: imagePositionY)
 
         return imageEndPosition
     }
 
     func buildFacePosition(faceRect faceRect: CGRect, imageSize: CGSize, viewPortSize: CGSize) -> CGPoint {
-        let imageCenter = CGPointMake(viewPortSize.width / 2, viewPortSize.height / 2)
+        let imageCenter = CGPoint(x: viewPortSize.width / 2, y: viewPortSize.height / 2)
         let imageFrame = CGRect(center: imageCenter, size: imageSize)
 
         let centerOfFaceRect = faceRect.center()
@@ -100,7 +100,7 @@ class ImageAnimationCalculator: ImageAnimationCalculatorProtocol {
 
         let positionX = -(centerOfFaceRect.x - viewPortSize.width / 2 + imageFrame.origin.x + xCompensation)
         let positionY = -(centerOfFaceRect.y - viewPortSize.height / 2 + imageFrame.origin.y + yCompensation)
-        let position = CGPointMake(positionX, positionY)
+        let position = CGPoint(x: positionX, y: positionY)
         return position
     }
 

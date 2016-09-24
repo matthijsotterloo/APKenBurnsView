@@ -43,9 +43,9 @@ extension CGFloat {
 
 extension Bool {
     /**
-     Returns random CGFloat
+     Returns random Bool
      */
-    static func random() -> Bool {
-        return Bool(Int(arc4random_uniform(UInt32(2))))
+    static var random: Bool {
+        return arc4random_uniform(2) == 0
     }
 }

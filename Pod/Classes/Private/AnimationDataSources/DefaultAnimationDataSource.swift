@@ -24,14 +24,15 @@ class DefaultAnimationDataSource: AnimationDataSource {
 
     // MARK: - Public
 
-    func buildAnimationForImage(image: UIImage, forViewPortSize viewPortSize: CGSize) -> ImageAnimation {
+    func buildAnimation(forImage: UIImage, forViewPortSize viewPortSize: CGSize) -> ImageAnimation {
+        let image = forImage
         let imageSize = image.size
 
         let startScale = animationCalculator.buildRandomScale(imageSize: imageSize, viewPortSize: viewPortSize)
         let endScale = animationCalculator.buildRandomScale(imageSize: imageSize, viewPortSize: viewPortSize)
 
-        let scaledStartImageSize = imageSize.scaledSize(startScale)
-        let scaledEndImageSize = imageSize.scaledSize(endScale)
+        let scaledStartImageSize = imageSize.scaled(startScale)
+        let scaledEndImageSize = imageSize.scaled(endScale)
 
         let imageStartPosition = animationCalculator.buildPinnedToEdgesPosition(imageSize: scaledStartImageSize,
                                                                                 viewPortSize: viewPortSize)
@@ -53,7 +54,7 @@ class DefaultAnimationDataSource: AnimationDataSource {
     private func translateToImageCoordinates(point point: CGPoint, imageSize: CGSize, viewPortSize: CGSize) -> CGPoint {
         let x = imageSize.width / 2 - viewPortSize.width / 2 - point.x
         let y = imageSize.height / 2 - viewPortSize.height / 2 - point.y
-        let position = CGPointMake(x, y)
+        let position = CGPoint(x: x, y: y)
         return position
     }
 }

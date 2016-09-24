@@ -20,7 +20,7 @@ class RandomGenerator: RandomGeneratorProtocol {
     // MARK: - Public
 
     func randomBool() -> Bool {
-        return Bool.random()
+        return Bool.random
     }
 
     func randomCGFloat(min min: CGFloat = 0.0, max: CGFloat) -> CGFloat {
