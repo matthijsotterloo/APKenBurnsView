@@ -21,12 +21,12 @@ import QuartzCore
     /*
         Called when transition starts from one image to another
     */
-    @objc optional func kenBurnsViewDidStartTransition(kenBurnsView: APKenBurnsView, toImage: UIImage)
+    @objc optional func didStartTransition(forKenBurnsView: APKenBurnsView, toImage: UIImage)
 
     /*
         Called when transition from one image to another is finished
     */
-    @objc optional func kenBurnsViewDidFinishTransition(kenBurnsView: APKenBurnsView)
+    @objc optional func didFinishTransition(forKenBurnsView: APKenBurnsView)
 }
 
 
@@ -264,10 +264,10 @@ public class APKenBurnsView: UIView {
 
                 self.startTimerWithDelay(delay: delay) {
 
-                    self.delegate?.kenBurnsViewDidStartTransition?(kenBurnsView: self, toImage: image)
+                    self.delegate?.didStartTransition?(forKenBurnsView: self, toImage: image)
 
                     self.animateTransitionWithDuration(duration: duration, imageView: imageView, nextImageView: nextImageView) {
-                        self.delegate?.kenBurnsViewDidFinishTransition?(kenBurnsView: self)
+                        self.delegate?.didFinishTransition?(forKenBurnsView: self)
                         self.facesDrawer.cleanUpForView(view: imageView)
                     }
 
