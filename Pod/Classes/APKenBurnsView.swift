@@ -285,7 +285,7 @@ public class APKenBurnsView: UIView {
     private func animateTransitionWithDuration(duration: Double, imageView: UIImageView, nextImageView: UIImageView, completion: @escaping () -> ()) {
         UIView.animate(withDuration: duration,
                        delay: 0.0,
-                       options: .curveEaseInOut,
+                       options: UIViewAnimationOptions.curveLinear,
                        animations: {
                         imageView.alpha = 0.0
                         nextImageView.alpha = 1.0 },
