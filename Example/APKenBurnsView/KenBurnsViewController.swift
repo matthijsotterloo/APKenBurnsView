@@ -43,7 +43,7 @@ class KenBurnsViewController: UIViewController {
 
 extension KenBurnsViewController: APKenBurnsViewDataSource {
     func nextImage(forKenBurnsView: APKenBurnsView) -> UIImage? {
-        let image = UIImage(named: dataSource[dataSource.index(dataSource.startIndex, offsetBy: 0)])!
+        let image = UIImage(named: dataSource[dataSource.index(self.index, offsetBy: 0)])!
         self.index = index == dataSource.count - 1 ? 0 : index + 1
         return image
     }
