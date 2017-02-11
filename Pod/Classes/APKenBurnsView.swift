@@ -127,7 +127,10 @@ public class APKenBurnsView: UIView {
         stopWatch = StopWatch()
 
         let image = dataSource?.nextImage(forKenBurnsView: self)
-        startTransitionWithImage(image: image!, imageView: firstImageView, nextImageView: secondImageView)
+        
+        if let image = image {
+            startTransitionWithImage(image: image, imageView: firstImageView, nextImageView: secondImageView)
+        }    
     }
 
     public func pauseAnimations() {
@@ -285,7 +288,7 @@ public class APKenBurnsView: UIView {
     private func animateTransitionWithDuration(duration: Double, imageView: UIImageView, nextImageView: UIImageView, completion: @escaping () -> ()) {
         UIView.animate(withDuration: duration,
                        delay: 0.0,
-                       options: .curveEaseInOut,
+                       options: UIViewAnimationOptions.curveLinear,
                        animations: {
                         imageView.alpha = 0.0
                         nextImageView.alpha = 1.0 },
