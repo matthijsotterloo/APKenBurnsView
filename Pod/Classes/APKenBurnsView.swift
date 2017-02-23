@@ -126,27 +126,29 @@ public class APKenBurnsView: UIView {
 
         stopWatch = StopWatch()
 
-        let image = dataSource?.nextImage(forKenBurnsView: self)
-        
-        if let image = image {
+        if let image = dataSource?.nextImage(forKenBurnsView: self) {
             startTransitionWithImage(image: image, imageView: firstImageView, nextImageView: secondImageView)
-        }    
+        }
     }
 
     public func pauseAnimations() {
-        firstImageView.backupAnimations()
-        secondImageView.backupAnimations()
+        if !(timer?.isPaused ?? true) {
+            firstImageView.backupAnimations()
+            secondImageView.backupAnimations()
 
-        timer?.pause()
-        layer.pauseAnimations()
+            timer?.pause()
+            layer.pauseAnimations()
+        }
     }
 
     public func resumeAnimations() {
-        firstImageView.restoreAnimations()
-        secondImageView.restoreAnimations()
+        if timer?.isPaused ?? false {
+            firstImageView.restoreAnimations()
+            secondImageView.restoreAnimations()
 
-        timer?.resume()
-        layer.resumeAnimations()
+            timer?.resume()
+            layer.resumeAnimations()
+        }
     }
 
     public func stopAnimations() {
@@ -288,7 +290,7 @@ public class APKenBurnsView: UIView {
     private func animateTransitionWithDuration(duration: Double, imageView: UIImageView, nextImageView: UIImageView, completion: @escaping () -> ()) {
         UIView.animate(withDuration: duration,
                        delay: 0.0,
-                       options: UIViewAnimationOptions.curveLinear,
+                       options: .curveEaseInOut,
                        animations: {
                         imageView.alpha = 0.0
                         nextImageView.alpha = 1.0 },
