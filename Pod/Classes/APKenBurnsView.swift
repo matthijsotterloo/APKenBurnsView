@@ -13,13 +13,6 @@ import QuartzCore
         If no image provided (data source returns nil) then previous image will be used one more time.
     */
     func nextImage(forKenBurnsView: APKenBurnsView) -> UIImage?
-    
-    
-    /*
-     Remote stream data source method. Data source should provide an APKenBurnsRemoteStream.
-     The stream will download data from its image URLs and asynchronously source the view.
-     */
-    func remoteStream(forKenBurnsView: APKenBurnsView) -> APKenBurnsRemoteStream?
 }
 
 
