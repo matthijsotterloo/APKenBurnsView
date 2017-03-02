@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name             = "APKenBurnsView"
-  s.version          = "1.0.2"
+  s.version          = "1.0.3"
   s.summary          = "KenBurns effect written in pure Swift with face recognition."
-  s.homepage         = "https://github.com/Alterplay/APKenBurnsView"
+  s.homepage         = "https://github.com/matthijsotterloo/APKenBurnsView"
   s.license          = 'MIT'
   s.author           = { "Nickolay Sheika" => "nickolai.sheika@alterplay.com" }
-  s.source           = { :git => "https://github.com/Alterplay/APKenBurnsView.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/matthijsotterloo/APKenBurnsView.git", :tag => s.version.to_s }
 
   s.ios.deployment_target = '8.0'
   s.tvos.deployment_target = '9.0'

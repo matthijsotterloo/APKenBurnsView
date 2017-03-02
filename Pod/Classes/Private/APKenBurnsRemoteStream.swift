@@ -34,29 +34,39 @@ class ImageLoader {
 }
 
 public class APKenBurnsRemoteStream: APKenBurnsViewDataSource {
-
-    var imageUrls: [URL] = [] {
+    
+    public init(initialUrls: [URL]? = nil) {
+        if let initialUrls = initialUrls {
+            self.imageUrls = initialUrls
+        }
+    }
+    
+    public var imageUrls: [URL] = [] {
         didSet {
-            self.images = [UIImage?](count: self.imageUrls.count, repeatedValue: nil)
+            self.images = [UIImage?](repeating: nil, count: self.imageUrls.count)
             self.initiateDownloads()
         }
     }
     
-    fileprivate var images: [UIImage?] = []
-    fileprivate let currentIndex = 0
+    public var images: [UIImage?] = []
+    fileprivate var currentIndex = 0
     
-    fileprivate func nextImage(forKenBurnsView: APKenBurnsView) -> UIImage? {
+    public func nextImage(forKenBurnsView: APKenBurnsView) -> UIImage? {
+        if currentIndex >= self.images.count {
+            currentIndex = 0
+        }
+        
         if let nextImage = self.images[currentIndex] {
+            currentIndex += 1
             return nextImage
         }
         
-        currentIndex += 1
         return nil
     }
     
     fileprivate func initiateDownloads() {
         for (index, url) in imageUrls.enumerated() {
-            ImageLoader.loadImage(withURL: url.url, completion: { (image) in
+            ImageLoader.loadImage(withURL: url, completion: { (image) in
                 self.images[index] = image
             })
         }
