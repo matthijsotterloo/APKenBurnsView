@@ -160,7 +160,8 @@ public class APKenBurnsView: UIView {
             secondImageView.backupAnimations()
             
             timer?.pause()
-            layer.pauseAnimations()
+            firstImageView.layer.pauseAnimations()
+            secondImageView.layer.pauseAnimations()
         }
     }
     
@@ -172,7 +173,8 @@ public class APKenBurnsView: UIView {
             secondImageView.restoreAnimations()
             
             timer?.resume()
-            layer.resumeAnimations()
+            firstImageView.layer.resumeAnimations()
+            secondImageView.layer.resumeAnimations()
         }
     }
     
