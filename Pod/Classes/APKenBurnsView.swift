@@ -272,6 +272,7 @@ public class APKenBurnsView: UIView {
     private func requestNewImageForTransition(imageView: UIImageView, nextImageView: UIImageView) {
         if let image = self.dataSource?.nextImage(forKenBurnsView: self) {
             loadingView.isHidden = true
+            self.delegate?.didStartTransition?(forKenBurnsView: self, toImage: image)
             self.startTransitionWithImage(image: image, imageView: imageView, nextImageView: nextImageView)
         } else {
             if repeatsNextImageRequests {
@@ -314,8 +315,6 @@ public class APKenBurnsView: UIView {
                 let delay = animation.duration - duration / 2
                 
                 self.startTimerWithDelay(delay: delay) {
-                    
-                    self.delegate?.didStartTransition?(forKenBurnsView: self, toImage: image)
                     
                     self.animateTransitionWithDuration(duration: duration, imageView: imageView, nextImageView: nextImageView) {
                         self.delegate?.didFinishTransition?(forKenBurnsView: self)
