@@ -52,13 +52,15 @@ public class APKenBurnsRemoteStream: APKenBurnsViewDataSource {
     fileprivate var currentIndex = 0
     
     public func nextImage(forKenBurnsView: APKenBurnsView) -> UIImage? {
-        if currentIndex >= self.images.count {
-            currentIndex = 0
-        }
-        
-        if let nextImage = self.images[currentIndex] {
-            currentIndex += 1
-            return nextImage
+        if self.images.count > 0 {
+            if currentIndex >= self.images.count {
+                currentIndex = 0
+            }
+            
+            if let nextImage = self.images[currentIndex] {
+                currentIndex += 1
+                return nextImage
+            }
         }
         
         return nil
