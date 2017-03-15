@@ -69,7 +69,9 @@ public class APKenBurnsRemoteStream: APKenBurnsViewDataSource {
     fileprivate func initiateDownloads() {
         for (index, url) in imageUrls.enumerated() {
             ImageLoader.loadImage(withURL: url, completion: { (image) in
-                self.images[index] = image
+                DispatchQueue.main.async {
+                    self.images[index] = image
+                }
             })
         }
     }
