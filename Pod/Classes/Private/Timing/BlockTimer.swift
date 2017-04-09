@@ -4,7 +4,7 @@
 
 import Foundation
 
-class BlockTimer {
+public class BlockTimer {
 
     // MARK: - Private Variables
 
@@ -13,7 +13,7 @@ class BlockTimer {
     private var callback: (() -> ())? // callback is retained, but cancel() will drop it and therefore break retain cycle
     private var timeLeftToFire: TimeInterval?
     
-    var isPaused: Bool = false
+    public var isPaused: Bool = false
 
     // MARK: - Init
 

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "APKenBurnsView"
-  s.version          = "1.0.4"
+  s.version          = "1.0.5"
   s.summary          = "KenBurns effect written in pure Swift with face recognition."
   s.homepage         = "https://github.com/matthijsotterloo/APKenBurnsView"
   s.license          = 'MIT'

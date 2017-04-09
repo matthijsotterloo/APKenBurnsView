@@ -12,12 +12,18 @@ extension CGFloat {
     }
 }
 
-@objc public protocol APKenBurnsViewDataSource {
+public protocol APKenBurnsViewDataSource {
     /*
      Main data source method. Data source should provide next image.
      If no image provided (data source returns nil) then previous image will be used one more time.
      */
     func nextImage(forKenBurnsView: APKenBurnsView) -> UIImage?
+    
+    func nextProportionalFocusRect(forKenBurnsView: APKenBurnsView) -> CGRect?
+}
+
+public extension APKenBurnsViewDataSource {
+    func nextProportionalFocusRect(forKenBurnsView: APKenBurnsView) -> CGRect? { return nil }
 }
 
 
@@ -60,7 +66,7 @@ public class APKenBurnsView: UIView {
      NOTE: Interface Builder does not support connecting to an outlet in a Swift file when the outlet’s type is a protocol.
      Workaround: Declare the outlet's type as AnyObject or NSObject, connect objects to the outlet using Interface Builder, then change the outlet's type back to the protocol.
      */
-    @IBOutlet public weak var dataSource: APKenBurnsViewDataSource?
+    public var dataSource: APKenBurnsViewDataSource?
     
     
     // MARK: - Delegate
@@ -149,10 +155,15 @@ public class APKenBurnsView: UIView {
         
         stopWatch = StopWatch()
         
+        if let stream = dataSource as? APKenBurnsRemoteStream {
+            stream.currentIndex = 0
+        }
+        
         requestNewImageForTransition(imageView: firstImageView, nextImageView: secondImageView)
     }
     
     public func pauseAnimations() {
+        
         if !(timer?.isPaused ?? true) {
             self.delegate?.didPauseTransition?(forKenBurnsView: self)
             
@@ -166,6 +177,7 @@ public class APKenBurnsView: UIView {
     }
     
     public func resumeAnimations() {
+        
         if timer?.isPaused ?? false {
             self.delegate?.didResumeTransition?(forKenBurnsView: self)
             
@@ -195,7 +207,7 @@ public class APKenBurnsView: UIView {
     
     private let notificationCenter = NotificationCenter.default
     
-    private var timer: BlockTimer?
+    public var timer: BlockTimer?
     private var stopWatch: StopWatch!
     
     
@@ -270,10 +282,13 @@ public class APKenBurnsView: UIView {
     }
     
     private func requestNewImageForTransition(imageView: UIImageView, nextImageView: UIImageView) {
+        
+        let proportionalFocusRect = self.dataSource?.nextProportionalFocusRect(forKenBurnsView: self)
+        
         if let image = self.dataSource?.nextImage(forKenBurnsView: self) {
             loadingView.isHidden = true
             self.delegate?.didStartTransition?(forKenBurnsView: self, toImage: image)
-            self.startTransitionWithImage(image: image, imageView: imageView, nextImageView: nextImageView)
+            self.startTransitionWithImage(image: image, imageView: imageView, nextImageView: nextImageView, proportionalFocusRect: proportionalFocusRect)
         } else {
             if repeatsNextImageRequests {
                 loadingView.isHidden = false
@@ -282,18 +297,22 @@ public class APKenBurnsView: UIView {
                     self.requestNewImageForTransition(imageView: imageView, nextImageView: nextImageView)
                 }
             } else {
-                self.startTransitionWithImage(image: nextImageView.image ?? UIImage(), imageView: imageView, nextImageView: nextImageView)
+                self.startTransitionWithImage(image: nextImageView.image ?? UIImage(), imageView: imageView, nextImageView: nextImageView, proportionalFocusRect: proportionalFocusRect)
             }
         }
     }
     
-    private func startTransitionWithImage(image: UIImage, imageView: UIImageView, nextImageView: UIImageView) {
+    private func startTransitionWithImage(image: UIImage, imageView: UIImageView, nextImageView: UIImageView, proportionalFocusRect: CGRect? = nil) {
         guard isValidAnimationDurations() else {
             fatalError("Animation durations setup is invalid!")
         }
         
         DispatchQueue.global().async {
             self.stopWatch.start()
+            
+            if let defaultAnimationDatasource = self.animationDataSource as? DefaultAnimationDataSource {
+                defaultAnimationDatasource.proportionalFocusRect = proportionalFocusRect
+            }
             
             var animation = self.animationDataSource.buildAnimation(forImage: image, forViewPortSize: self.bounds.size)
             
@@ -316,8 +335,9 @@ public class APKenBurnsView: UIView {
                 
                 self.startTimerWithDelay(delay: delay) {
                     
+                    self.delegate?.didFinishTransition?(forKenBurnsView: self)
+                    
                     self.animateTransitionWithDuration(duration: duration, imageView: imageView, nextImageView: nextImageView) {
-                        self.delegate?.didFinishTransition?(forKenBurnsView: self)
                         self.facesDrawer.cleanUpForView(view: imageView)
                     }
                     

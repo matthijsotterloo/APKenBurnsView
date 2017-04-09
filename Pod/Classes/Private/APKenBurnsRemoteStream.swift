@@ -48,8 +48,22 @@ public class APKenBurnsRemoteStream: APKenBurnsViewDataSource {
         }
     }
     
+    public var proportionalFocusRects: [CGRect] = []
+    
     public var images: [UIImage?] = []
     public var currentIndex = 0
+    
+    public func nextProportionalFocusRect(forKenBurnsView: APKenBurnsView) -> CGRect? {
+        if currentIndex >= self.images.count {
+            currentIndex = 0
+        }
+        
+        if self.proportionalFocusRects.count > 0 && currentIndex < self.proportionalFocusRects.count {
+            return self.proportionalFocusRects[currentIndex]
+        }
+        
+        return nil
+    }
     
     public func nextImage(forKenBurnsView: APKenBurnsView) -> UIImage? {
         if self.images.count > 0 {
