@@ -247,13 +247,16 @@ public class APKenBurnsView: UIView {
     
     
     // MARK: - Notifications
-    
+    var wasPaused = false
     @objc private func applicationWillResignActive(notification: NSNotification) {
+        wasPaused = (timer?.isPaused ?? false)
         pauseAnimations()
     }
     
     @objc private func applicationDidBecomeActive(notification: NSNotification) {
-        resumeAnimations()
+        if !wasPaused {
+            resumeAnimations()
+        }
     }
     
     
